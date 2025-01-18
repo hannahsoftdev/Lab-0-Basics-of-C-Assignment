@@ -1,0 +1,156 @@
+using System; // Provides tools for input/output and basic operations
+using System.IO; // Allows us to work with files
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // STEP 1: Ask the user to enter a positive "low" number.
+        // The variable `low` will store this value.
+        int low = GetPositiveNumber("Enter a positive low number (must be greater than 0): ");
+
+        // STEP 2: Ask the user to enter a "high" number that is greater than the `low` number.
+        // The variable `high` will store this value.
+        int high = GetHigherNumber("Enter a high number (must be greater than the low number): ", low);
+
+        // STEP 3: Calculate and display the difference between `high` and `low`.
+        int difference = high - low; // Difference is calculated by subtraction.
+        Console.WriteLine($"The difference between {high} and {low} is {difference}.");
+
+        // STEP 4: Create an array containing all numbers between `low` and `high` (inclusive).
+        int[] numbers = CreateNumberArray(low, high);
+
+        // STEP 5: Write the numbers from the array to a file called "numbers.txt" in reverse order.
+        WriteNumbersToFile(numbers, "numbers.txt");
+        Console.WriteLine("The numbers have been written to 'numbers.txt' in reverse order.");
+
+        // STEP 6: Read the numbers back from the file and calculate their total sum.
+        int sum = ReadNumbersFromFileAndCalculateSum("numbers.txt");
+        Console.WriteLine($"The sum of the numbers is {sum}.");
+
+        // STEP 7: Find and display all the prime numbers between `low` and `high`.
+        Console.WriteLine("Prime numbers between low and high:");
+        foreach (int number in numbers) // Loop through all numbers in the array.
+        {
+            if (IsPrime(number)) // Check if the current number is a prime number.
+            {
+                Console.WriteLine(number); // Print the prime number.
+            }
+        }
+    }
+
+    /// <summary>
+    /// Prompts the user for a positive number.
+    /// Keeps asking until the user provides a valid number greater than 0.
+    /// </summary>
+    /// <param name="message">Message displayed to the user.</param>
+    /// <returns>A valid positive number.</returns>
+    static int GetPositiveNumber(string message)
+    {
+        int number; // Variable to store the user's input.
+        do
+        {
+            Console.Write(message); // Display the message (prompt).
+            // Try converting the input into a number. If it fails or the number is <= 0, repeat.
+        } while (!int.TryParse(Console.ReadLine(), out number) || number <= 0);
+
+        return number; // Return the valid positive number.
+    }
+
+    /// <summary>
+    /// Prompts the user for a number that is greater than the given `low` number.
+    /// Keeps asking until the user provides a valid number greater than `low`.
+    /// </summary>
+    /// <param name="message">Message displayed to the user.</param>
+    /// <param name="low">The lower limit that the user's number must exceed.</param>
+    /// <returns>A valid number greater than `low`.</returns>
+    static int GetHigherNumber(string message, int low)
+    {
+        int number; // Variable to store the user's input.
+        do
+        {
+            Console.Write(message); // Display the message (prompt).
+            // Try converting the input into a number. If it fails or the number is <= low, repeat.
+        } while (!int.TryParse(Console.ReadLine(), out number) || number <= low);
+
+        return number; // Return the valid higher number.
+    }
+
+    /// <summary>
+    /// Creates an array of integers containing all numbers between `low` and `high` (inclusive).
+    /// </summary>
+    /// <param name="low">The starting number (inclusive).</param>
+    /// <param name="high">The ending number (inclusive).</param>
+    /// <returns>An array of integers from `low` to `high`.</returns>
+    static int[] CreateNumberArray(int low, int high)
+    {
+        int size = high - low + 1; // Calculate how many numbers are needed in the array.
+        int[] numbers = new int[size]; // Create an array of the appropriate size.
+
+        // Fill the array with numbers from `low` to `high`.
+        for (int i = 0; i < size; i++)
+        {
+            numbers[i] = low + i;
+        }
+        return numbers; // Return the filled array.
+    }
+
+    /// <summary>
+    /// Writes the numbers from the array to a file in reverse order.
+    /// </summary>
+    /// <param name="numbers">The array of numbers to write.</param>
+    /// <param name="fileName">The name of the file to create.</param>
+    static void WriteNumbersToFile(int[] numbers, string fileName)
+    {
+        // Open the file for writing using a StreamWriter.
+        using (StreamWriter writer = new StreamWriter(fileName))
+        {
+            // Write the numbers to the file starting from the last to the first.
+            for (int i = numbers.Length - 1; i >= 0; i--)
+            {
+                writer.WriteLine(numbers[i]); // Write each number to the file.
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads numbers from a file and calculates their sum.
+    /// </summary>
+    /// <param name="fileName">The name of the file to read from.</param>
+    /// <returns>The sum of the numbers in the file.</returns>
+    static int ReadNumbersFromFileAndCalculateSum(string fileName)
+    {
+        int sum = 0; // Variable to store the sum of the numbers.
+
+        // Open the file for reading using a StreamReader.
+        using (StreamReader reader = new StreamReader(fileName))
+        {
+            string line; // Variable to hold each line of text read from the file.
+            while ((line = reader.ReadLine()) != null) // Continue reading until the end of the file.
+            {
+                sum += int.Parse(line); // Convert the line to an integer and add it to the sum.
+            }
+        }
+        return sum; // Return the total sum.
+    }
+
+    /// <summary>
+    /// Determines if a given number is a prime number.
+    /// </summary>
+    /// <param name="number">The number to check.</param>
+    /// <returns>True if the number is prime; otherwise, false.</returns>
+    static bool IsPrime(int number)
+    {
+        if (number < 2) return false; // Numbers less than 2 are not prime.
+
+        // Check if the number is divisible by any number from 2 to the square root of `number`.
+        for (int i = 2; i <= Math.Sqrt(number); i++)
+        {
+            if (number % i == 0) // If divisible, it's not prime.
+            {
+                return false;
+            }
+        }
+        return true; // If no divisors are found, the number is prime.
+    }
+}
